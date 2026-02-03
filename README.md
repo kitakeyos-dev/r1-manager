@@ -80,7 +80,7 @@ com.phicomm.r1manager/
 - **Target Device**: Phicomm R1 (Android 5.1) or Android 5.0+
 - **Build**: Android SDK 30, NDK 27, Gradle 4.1
 - **ABI**: armeabi-v7a
-- **Required APK**: `com.phicomm.speaker.player.apk` must be installed on the device
+- **Required APK**: [`com.phicomm.speaker.player.apk`](com.phicomm.speaker.player.apk) must be installed on the device
 
 ## Building & Installation
 
@@ -161,4 +161,4 @@ The script will:
 
 ## License
 
-MIT License
+[MIT License](LICENSE)
