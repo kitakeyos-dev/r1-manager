@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">R1 Manager</string>
+    <string name="server_status">Trạng thái Server</string>
+    <string name="starting">Đang khởi động...</string>
+    <string name="running">Đang chạy</string>
+    <string name="stopped">Đã dừng</string>
+    <string name="access_url">Truy cập từ trình duyệt</string>
+    <string name="instructions">Mở trình duyệt trên điện thoại và nhập địa chỉ trên để quản lý loa Phicomm R1</string>
+    <string name="notification_title">R1 Manager đang chạy</string>
+    <string name="notification_text">Web server hoạt động tại port 8188</string>
+</resources>

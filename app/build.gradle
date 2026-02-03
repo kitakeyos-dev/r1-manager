@@ -1,0 +1,77 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+    ndkVersion "27.0.12077973"
+    
+    defaultConfig {
+        applicationId "com.phicomm.r1manager"
+        minSdkVersion 22
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+        
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11"
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+        
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('r1manager.jks')
+            storePassword 'r1manager123'
+            keyAlias 'r1manager'
+            keyPassword 'r1manager123'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false  // Disabled due to Java version compatibility
+            signingConfig signingConfigs.release
+            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    // NanoHTTPD - Lightweight web server
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    
+    // GSON - JSON serialization
+    implementation 'com.google.code.gson:gson:2.8.2'
+    
+    // Java-WebSocket
+    implementation 'org.java-websocket:Java-WebSocket:1.4.0'
+    
+    // ExoPlayer - Advanced media player (older version for API 22 compatibility)
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.13.3'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.13.3'
+    implementation 'com.google.android.exoplayer:exoplayer-hls:2.13.3'
+}

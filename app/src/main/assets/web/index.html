@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Phicomm R1 Manager</title>
+    <link rel="stylesheet" href="libs/all.min.css">
+    <script src="libs/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1b26">
+    <link rel="icon" type="image/png" href="img/icon.png">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-icon">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h1>R1 Manager</h1>
+            <p class="subtitle">Quản lý loa Phicomm R1</p>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="xiaozhi">
+                <i class="fas fa-robot"></i>
+                <span>Xiaozhi</span>
+            </button>
+            <button class="tab" data-tab="memory">
+                <i class="fas fa-brain"></i>
+                <span>Memory</span>
+            </button>
+            <button class="tab" data-tab="music">
+                <i class="fas fa-music"></i>
+                <span>Music</span>
+            </button>
+            <button class="tab" data-tab="apps">
+                <i class="fas fa-th"></i>
+                <span>Apps</span>
+            </button>
+            <button class="tab" data-tab="files">
+                <i class="fas fa-folder"></i>
+                <span>Files</span>
+            </button>
+
+            <button class="tab" data-tab="system">
+                <i class="fas fa-cog"></i>
+                <span>System</span>
+            </button>
+        </nav>
+
+        <!-- Tab Contents -->
+        <main class="tab-contents">
+
+            <!-- ==================== MUSIC TAB ==================== -->
+            <div id="music-tab" class="tab-content">
+
+                <!-- Now Playing & Player Controls -->
+                <div id="nowPlayingCard" class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-play-circle"></i> Đang phát</h3>
+                        <!-- Mode Toggle -->
+                        <button id="btnMode" class="btn btn-small" style="margin-left:auto; width:30px;"
+                            title="Chế độ phát">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <!-- Thumbnail Container -->
+                            <div
+                                style="width:64px; height:64px; border-radius:8px; overflow:hidden; background:#333; flex-shrink:0; display:flex; align-items:center; justify-content:center;">
+                                <img id="npThumb" src=""
+                                    style="width:100%; height:100%; object-fit:cover; display:none;">
+                                <div id="npPlaceholder" style="font-size:24px; color:#555;">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                            </div>
+
+                            <div style="flex:1; overflow:hidden;">
+                                <div id="npTitle"
+                                    style="font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    Chưa chọn bài</div>
+                                <div id="npArtist" style="font-size:12px; color:#aaa;">...</div>
+                            </div>
+                        </div>
+
+                        <!-- Seek Slider -->
+                        <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+                            <span id="timeCurrent" style="font-size:10px; color:#888;">00:00</span>
+                            <input type="range" id="seekSlider" class="volume-slider" value="0" min="0" max="100"
+                                style="flex:1;">
+                            <span id="timeDuration" style="font-size:10px; color:#888;">00:00</span>
+                        </div>
+                        <div id="timeLabel" style="display:none;"></div> <!-- Legacy hidden -->
+
+                        <!-- Volume Control -->
+                        <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
+                            <i id="volumeIcon" class="fas fa-volume-up" style="width:20px; color:#888;"></i>
+                            <input type="range" id="volumeSlider" class="volume-slider" value="80" min="0" max="100"
+                                style="flex:1;">
+                            <span id="volumeValue"
+                                style="font-size:10px; color:#888; width:30px; text-align:right;">80</span>
+                        </div>
+
+                        <!-- Playback Speed -->
+                        <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
+                            <i class="fas fa-tachometer-alt" style="width:20px; color:#888;"></i>
+                            <select id="speedSelect" class="input" style="flex:1; padding:4px 8px; font-size:12px;">
+                                <option value="0.5">0.5x</option>
+                                <option value="0.75">0.75x</option>
+                                <option value="1.0" selected>1.0x</option>
+                                <option value="1.25">1.25x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="2.0">2.0x</option>
+                            </select>
+                            <span id="speedDisplay"
+                                style="font-size:10px; color:#888; width:30px; text-align:right;">1x</span>
+                        </div>
+
+                        <!-- Controls -->
+                        <div style="display:flex; justify-content:center; gap:20px; margin-top:12px;">
+                            <button id="btnPrev" class="btn btn-secondary"
+                                style="border-radius:50%; width:36px; height:36px;"><i
+                                    class="fas fa-step-backward"></i></button>
+                            <button id="btnPlay" class="btn btn-primary"
+                                style="border-radius:50%; width:48px; height:48px; font-size:18px;"><i
+                                    class="fas fa-play"></i></button>
+                            <button id="btnNext" class="btn btn-secondary"
+                                style="border-radius:50%; width:36px; height:36px;"><i
+                                    class="fas fa-step-forward"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playlist Queue -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list-ol"></i> Danh sách phát</h3>
+                        <button onclick="fetch('/api/playlist/clear',{method:'POST'}).then(sync)"
+                            class="btn btn-small btn-danger" style="margin-left:auto;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div id="playlistContainer" class="card-body"
+                        style="max-height:250px; overflow-y:auto; padding:8px;">
+                        <div class="empty">Danh sách trống</div>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-search"></i> Tìm kiếm nhạc (Zing MP3)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="flex-grow">
+                                    <input type="text" id="zingSearchInput" placeholder="Nhập tên bài hát, ca sĩ..."
+                                        class="input" onkeypress="if(event.key==='Enter')searchZing()">
+                                </div>
+                                <button class="btn btn-primary" onclick="searchZing()">
+                                    <i class="fas fa-search"></i> Tìm
+                                </button>
+                            </div>
+                        </div>
+                        <div id="zingSearchStatus" class="status"></div>
+                    </div>
+                </div>
+
+                <!-- Search Results -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Kết quả tìm kiếm</h3>
+                    </div>
+                    <div id="zingSearchResults" class="card-body">
+                        <div class="empty"><i class="fas fa-search"></i> Nhập từ khóa để tìm kiếm</div>
+                    </div>
+                </div>
+
+                <!-- Xiaozhi AI Card (Removed, moved to standalone tab) -->
+
+
+
+                <!-- Music LED Sync (Moved from Lights Tab) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-music"></i> Music LED Sync</h3>
+                        <div class="toggle-wrapper">
+                            <label class="toggle">
+                                <input type="checkbox" id="musicLedToggle" onchange="toggleMusicLed()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="musicLedControl" class="card-body">
+                        <div class="form-group">
+                            <label>Mode</label>
+                            <select id="musicLedMode" class="input" onchange="setMusicLedMode()">
+                                <option value="SPECTRUM">Spectrum - VU Meter (Nháy theo âm lượng)</option>
+                                <option value="PULSE">Pulse - Nhấp nháy theo nhịp Beat</option>
+                                <option value="WAVE">Wave - Sóng màu xoay vòng</option>
+                                <option value="RAINBOW">Rainbow - Cầu vồng chuyển màu</option>
+                                <option value="PARTY">Party - Vũ trường sôi động</option>
+                                <option value="METEOR">Meteor - Sao băng (Vòng viền)</option>
+                                <option value="VORTEX">Vortex - Cơn lốc (Đèn trong)</option>
+                                <option value="SPIRAL">Spiral - Xoáy ốc (Toàn bộ 39 LED)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sensitivity (Độ nhạy)</label>
+                            <div class="form-row" style="align-items: center;">
+                                <div class="flex-grow">
+                                    <input type="range" id="musicSensitivity" class="volume-slider" min="0" max="100"
+                                        value="50" onchange="setMusicLedSettings()">
+                                </div>
+                                <span class="brightness-value" id="sensitivity-val">50</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Brightness (Độ sáng)</label>
+                            <div class="form-row" style="align-items:  center;">
+                                <div class="flex-grow">
+                                    <input type="range" id="musicBrightness" class="volume-slider" min="0" max="255"
+                                        value="128" onchange="setMusicLedSettings()">
+                                </div>
+                                <span class="brightness-value" id="musicbright-val">128</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== APPS TAB ==================== -->
+            <div id="apps-tab" class="tab-content">
+                <!-- Install APK -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> Cài đặt ứng dụng</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-form" style="display: flex; align-items: center; gap: 10px;">
+                            <input type="file" id="apkUpload" class="file-input" accept=".apk">
+                            <label for="apkUpload" class="file-label" style="flex: 1;">
+                                <i class="fas fa-android"></i>
+                                <span class="file-text">Chọn file APK</span>
+                            </label>
+                            <button class="btn btn-primary" onclick="installApk()">
+                                <i class="fas fa-download"></i> Cài đặt
+                            </button>
+                        </div>
+                        <div id="installStatus" class="status"></div>
+                    </div>
+                </div>
+
+                <div class="content-header">
+                    <h2><i class="fas fa-boxes"></i> Danh sách ứng dụng</h2>
+                    <button class="btn btn-small" onclick="loadApps()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="appList" class="app-list">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+                </div>
+            </div>
+
+            <!-- ==================== FILES TAB ==================== -->
+            <div id="files-tab" class="tab-content">
+                <!-- Breadcrumb & Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <div id="fileBreadcrumb" style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+                            <i class="fas fa-folder-open"></i>
+                            <span>/sdcard</span>
+                        </div>
+                        <div class="button-group">
+                            <button class="btn btn-small" onclick="fileGoUp()">
+                                <i class="fas fa-level-up-alt"></i>
+                            </button>
+                            <button class="btn btn-small" onclick="loadFiles()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-form" style="margin-bottom: 15px;">
+                            <input type="file" id="fileUpload" class="file-input" multiple>
+                            <label for="fileUpload" class="file-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span class="file-text">Chọn file để upload</span>
+                            </label>
+                            <button class="btn btn-primary" onclick="uploadFiles()">
+                                <i class="fas fa-upload"></i> Upload
+                            </button>
+                            <button class="btn btn-success" onclick="createFolder()">
+                                <i class="fas fa-folder-plus"></i> Tạo thư mục
+                            </button>
+                        </div>
+                        <div id="uploadStatus" class="status"></div>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> <span id="fileCount">0</span> mục</h3>
+                    </div>
+                    <div id="fileList" class="file-list">
+                        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== XIAOZHI TAB ==================== -->
+            <div id="xiaozhi-tab" class="tab-content active">
+                <div class="content-header">
+                    <h2><i class="fas fa-robot"></i> Xiaozhi Bot Manager</h2>
+                    <button class="btn btn-primary" onclick="showAddBotModal()">
+                        <i class="fas fa-plus"></i> Add Bot
+                    </button>
+                </div>
+
+                <!-- Global Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-sliders-h"></i> Global Settings</h3>
+                        <div class="toggle-wrapper">
+                            <label class="toggle">
+                                <input type="checkbox" id="voiceBotToggle" onchange="toggleVoiceBot()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 10px; font-size: 12px; color: var(--gray-400);">
+                        Turn OFF to completely disable Voice Wake-up and Voice Interaction.
+                    </div>
+                </div>
+
+                <!-- Active Bot Status -->
+                <div id="active-bot-status-card" class="card" style="display:none;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-signal"></i> Active Bot: <span id="current-bot-name">None</span></h3>
+                        <div id="active-bot-state" class="status-badge">Idle</div>
+                    </div>
+                    <div class="card-body text-center">
+                        <button id="xz-main-start" class="btn btn-success btn-lg"
+                            onclick="startXiaozhi()">Start</button>
+                        <button id="xz-main-stop" class="btn btn-danger btn-lg" onclick="stopXiaozhi()">Stop</button>
+                    </div>
+                </div>
+
+                <!-- Bot List (Dashboard) -->
+                <div id="bot-list-container" class="bot-grid">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading bots...</div>
+                </div>
+
+                <!-- Chat Activity (Simple) -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-comment-alt"></i> Chat Activity</h3>
+                        <button class="btn btn-small" onclick="clearChatLog()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div id="chat-log" class="code-output"
+                        style="height: 200px; font-family: sans-serif; font-size: 14px;">
+                        <div class="text-muted">No activity yet...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== SYSTEM TAB ==================== -->
+            <div id="system-tab" class="tab-content">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="sys-info">Thông tin</button>
+                    <button class="sub-tab" data-subtab="sys-network">Mạng</button>
+                    <button class="sub-tab" data-subtab="sys-lights">Đèn LED</button>
+                    <button class="sub-tab" data-subtab="sys-tools">Công cụ</button>
+                </div>
+
+                <!-- Sub-Content: INFO -->
+                <div id="sys-info" class="sub-content active">
+                    <!-- System Info -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-info-circle"></i> Thông tin hệ thống</h3>
+                            <button class="btn btn-small" onclick="loadSystemInfo()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div id="systemInfo" class="card-body">
+                            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+                        </div>
+                    </div>
+
+                    <!-- Volume Control -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-volume-up"></i> Âm lượng</h3>
+                            <button class="btn btn-small" onclick="loadVolume()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div id="volumeControl" class="card-body">
+                            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Content: NETWORK -->
+                <div id="sys-network" class="sub-content">
+                    <!-- WiFi Info -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-wifi"></i> WiFi</h3>
+                            <div class="toggle-wrapper">
+                                <label class="toggle">
+                                    <input type="checkbox" id="wifiToggle" onchange="toggleWifi()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div id="wifiInfo" class="card-body">
+                            <div class="loading"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>
+                        </div>
+                    </div>
+
+                    <!-- Available Networks -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-search"></i> Mạng khả dụng</h3>
+                            <button class="btn btn-small" onclick="scanWifi()">
+                                <i class="fas fa-sync-alt"></i> Quét
+                            </button>
+                        </div>
+                        <div id="wifiNetworks" class="card-body">
+                            <div class="empty"><i class="fas fa-wifi"></i> Nhấn Quét để tìm mạng</div>
+                        </div>
+                    </div>
+
+                    <!-- Wake on LAN -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-power-off"></i> Wake on LAN (PC)</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Tên thiết bị (Tùy chọn)</label>
+                                <input type="text" id="wolName" class="input" placeholder="VD: PC Phong Khách">
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ MAC</label>
+                                <div class="form-row">
+                                    <div class="flex-grow">
+                                        <input type="text" id="wolMac" class="input" placeholder="AA:BB:CC:DD:EE:FF"
+                                            maxlength="17" style="text-transform: uppercase; font-family: monospace;">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="addWolDevice()" title="Lưu thiết bị">
+                                        <i class="fas fa-plus"></i> Thêm
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr style="border:0; border-top:1px solid var(--gray-700); margin:15px 0;">
+
+                            <div id="wolHistory" style="display: flex; flex-direction: column; gap: 8px;">
+                                <!-- Saved devices will appear here -->
+                            </div>
+
+                            <div id="wolStatus" class="status"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sub-Content: LIGHTS (Internal only) -->
+                <div id="sys-lights" class="sub-content">
+                    <!-- LED Control -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-lightbulb"></i> LED Control</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Internal LED (RGB) -->
+                            <div class="led-section">
+                                <label class="led-section-title">
+                                    <i class="fas fa-eye"></i> Đèn bên trong (15 LED)
+                                </label>
+                                <div class="color-presets" id="rgb-presets">
+                                    <div class="color-preset" style="background: #FF0000" data-color="#FF0000"
+                                        title="Red"></div>
+                                    <div class="color-preset" style="background: #00FF00" data-color="#00FF00"
+                                        title="Green"></div>
+                                    <div class="color-preset" style="background: #0000FF" data-color="#0000FF"
+                                        title="Blue"></div>
+                                    <div class="color-preset" style="background: #FFFF00" data-color="#FFFF00"
+                                        title="Yellow"></div>
+                                    <div class="color-preset" style="background: #00FFFF" data-color="#00FFFF"
+                                        title="Cyan"></div>
+                                    <div class="color-preset" style="background: #FF00FF" data-color="#FF00FF"
+                                        title="Magenta"></div>
+                                    <div class="color-preset" style="background: #FFFFFF" data-color="#FFFFFF"
+                                        title="White"></div>
+                                    <div class="color-preset" style="background: #334155" data-color="#000000"
+                                        title="Off"></div>
+                                </div>
+
+                                <div
+                                    style="margin-top: 15px; border: 1px dashed var(--gray-600); padding: 10px; border-radius: 8px;">
+                                    <label
+                                        style="font-size: 11px; color: var(--gray-400); margin-bottom: 8px; display: block;">TÙY
+                                        CHỈNH NÂNG CAO</label>
+                                    <div class="form-group">
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="internal-rgb-picker" class="input-color"
+                                                value="#00ffff" style="width: 100%;">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-size: 12px; margin-bottom: 8px; display: block;">Chọn bóng
+                                            đèn riêng lẻ (Bitwise Mask):</label>
+                                        <div id="led-bit-grid"
+                                            style="position: relative; width: 160px; height: 160px; margin: 0 auto 15px; border: 1px solid var(--gray-700); border-radius: 50%; background: rgba(0,0,0,0.1);">
+                                            <!-- 15 checkboxes will be positioned here -->
+                                        </div>
+                                        <div class="form-row" style="margin-bottom: 10px;">
+                                            <button class="btn btn-small btn-secondary flex-grow"
+                                                onclick="setLedBits(true)">Tất cả</button>
+                                            <button class="btn btn-small btn-secondary flex-grow"
+                                                onclick="setLedBits(false)">Xoá hết</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label style="font-size: 12px;">Vị trí LED (Mask Hex):</label>
+                                        <div class="form-row">
+                                            <input type="text" id="internal-mask-input" class="input" value="7fff"
+                                                placeholder="7fff" style="font-family: monospace;">
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-block" onclick="setCustomInternalLed()">
+                                        <i class="fas fa-magic"></i> Áp dụng tùy chỉnh
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid var(--gray-700); margin: 15px 0;">
+
+                            <!-- Ring LED (White) -->
+                            <div class="led-section">
+                                <label class="led-section-title">
+                                    <i class="fas fa-circle-notch"></i> Đèn viền (Trắng)
+                                </label>
+                                <div class="form-row" style="align-items: center;">
+                                    <div class="flex-grow">
+                                        <input type="range" id="ring-brightness" class="volume-slider" min="0" max="255"
+                                            value="0">
+                                    </div>
+                                    <span class="brightness-value" id="ring-val">0</span>
+                                </div>
+
+                                <div
+                                    style="margin-top: 15px; border: 1px dashed var(--gray-600); padding: 10px; border-radius: 8px;">
+                                    <label
+                                        style="font-size: 11px; color: var(--gray-400); margin-bottom: 8px; display: block;">TÙY
+                                        CHỈNH NÂNG CAO (24 LED)</label>
+                                    <div class="form-group">
+                                        <label style="font-size: 12px; margin-bottom: 8px; display: block;">Chọn bóng
+                                            đèn riêng lẻ (Bitwise Mask):</label>
+                                        <div id="ring-bit-grid"
+                                            style="position: relative; width: 250px; height: 250px; margin: 0 auto 15px; border: 2px solid var(--gray-600); border-radius: 50%; background: rgba(0,0,0,0.15);">
+                                            <!-- 24 checkboxes will be positioned here -->
+                                        </div>
+                                        <div class="form-row" style="margin-bottom: 10px;">
+                                            <button class="btn btn-small btn-secondary flex-grow"
+                                                onclick="setRingLedBits(true)">Tất cả</button>
+                                            <button class="btn btn-small btn-secondary flex-grow"
+                                                onclick="setRingLedBits(false)">Xóa hết</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="form-row" style="align-items: center;">
+                                            <div class="flex-grow">
+                                                <label style="font-size: 11px;">Cường độ (Hex):</label>
+                                                <input type="text" id="ring-custom-brightness-hex" class="input"
+                                                    value="00" placeholder="00-FF" style="font-family: monospace;">
+                                            </div>
+                                            <div style="width: 150px;">
+                                                <label style="font-size: 11px;">Mask (40-bit Hex):</label>
+                                                <input type="text" id="ring-mask-input" class="input" value="0000000000"
+                                                    placeholder="7FFFFF8000"
+                                                    style="font-family: monospace; font-size: 11px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-block" onclick="applyCustomRingLed()">
+                                        <i class="fas fa-magic"></i> Áp dụng cho Ring LED
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Content: TOOLS -->
+                <div id="sys-tools" class="sub-content">
+                    <div class="card">
+                        <div class="card-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3><i class="fas fa-list-alt"></i> Application Logs</h3>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-small btn-secondary" onclick="toggleAutoRefreshLogs()"
+                                    id="log-auto-refresh-btn">
+                                    <i class="fas fa-sync"></i> Auto (OFF)
+                                </button>
+                                <button class="btn btn-small btn-primary" onclick="refreshLogs()">
+                                    <i class="fas fa-refresh"></i> Refresh
+                                </button>
+                                <button class="btn btn-small btn-warning" onclick="clearAppLogs()">
+                                    <i class="fas fa-trash"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Filters -->
+                            <div class="form-row" style="margin-bottom: 15px; gap: 10px;">
+                                <select id="log-level-filter" class="input" style="width: 120px;"
+                                    onchange="filterLogs()">
+                                    <option value="">All Levels</option>
+                                    <option value="ERROR">ERROR</option>
+                                    <option value="WARN">WARN</option>
+                                    <option value="INFO">INFO</option>
+                                    <option value="DEBUG">DEBUG</option>
+                                    <option value="VERBOSE">VERBOSE</option>
+                                </select>
+                                <input type="text" id="log-tag-filter" class="input flex-grow"
+                                    placeholder="Filter by tag..." oninput="filterLogs()">
+                                <input type="text" id="log-msg-filter" class="input flex-grow"
+                                    placeholder="Filter by message..." oninput="filterLogs()">
+                            </div>
+
+                            <!-- Log Display -->
+                            <div id="log-container" style="
+                                background: #0a0a0a; 
+                                border: 1px solid var(--gray-700); 
+                                border-radius: 8px; 
+                                padding: 12px; 
+                                max-height: 500px; 
+                                overflow-y: auto; 
+                                font-family: 'Courier New', monospace; 
+                                font-size: 12px;
+                                line-height: 1.5;
+                            ">
+                                <div style="color: var(--gray-500); text-align: center; padding: 20px;">
+                                    Click "Refresh" to load logs...
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 10px; color: var(--gray-400); font-size: 11px; text-align: right;">
+                                <span id="log-count">0 logs</span> | Last updated: <span id="log-updated">Never</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shell Command -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-terminal"></i> Shell Command</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <input type="text" id="shellCommand" placeholder="Nhập lệnh shell..." class="input"
+                                    onkeypress="if(event.key==='Enter')executeShell()">
+                            </div>
+                            <button class="btn btn-primary btn-block" onclick="executeShell()">
+                                <i class="fas fa-play"></i> Thực thi
+                            </button>
+                            <div id="shellOutput" class="code-output"></div>
+                        </div>
+                    </div>
+
+                    <!-- Logcat -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-list-alt"></i> Logcat</h3>
+                            <div class="btn-group">
+                                <button class="btn btn-small" onclick="loadLogcat()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="btn btn-small btn-danger" onclick="clearLogcat()">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group flex-grow">
+                                    <input type="text" id="logFilter" placeholder="Filter tag (ví dụ: ActivityManager)"
+                                        class="input">
+                                </div>
+                                <div class="form-group">
+                                    <select id="logLines" class="input">
+                                        <option value="50">50 dòng</option>
+                                        <option value="100" selected>100 dòng</option>
+                                        <option value="200">200 dòng</option>
+                                        <option value="500">500 dòng</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="logcatOutput" class="code-output"></div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-cog"></i> Settings</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Web Server Port</label>
+                                <div class="form-row">
+                                    <div class="flex-grow">
+                                        <input type="number" id="serverPort" class="input" min="1024" max="65535"
+                                            placeholder="8188">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="changePort()">
+                                        <i class="fas fa-save"></i> Lưu
+                                    </button>
+                                </div>
+                                <div style="margin-top: 8px; font-size: 11px; color: var(--gray-500);">
+                                    Port hợp lệ: 1024 - 65535. Trang sẽ tự chuyển sang port mới.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Actions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-cog"></i> System Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Power</label>
+                                <button class="btn btn-warning btn-block" onclick="rebootDevice()">
+                                    <i class="fas fa-power-off"></i> Reboot Device
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label>Service Control</label>
+                                <div class="button-group">
+                                    <button class="btn btn-secondary flex-grow" onclick="rebootService('reboot_adbd')">
+                                        <i class="fas fa-sync"></i> Restart ADB
+                                    </button>
+                                    <button class="btn btn-secondary flex-grow" onclick="rebootService('reboot_echo')">
+                                        <i class="fas fa-sync"></i> Restart Echo
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>System Language (Requires Reboot)</label>
+                                <div class="form-row">
+                                    <div class="flex-grow">
+                                        <select id="language-select" class="input">
+                                            <option value="zh">Chinese (ZH)</option>
+                                            <option value="en">English (EN)</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="applySystemLanguage()">
+                                        <i class="fas fa-language"></i> Lưu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== MEMORY TAB ==================== -->
+            <div id="memory-tab" class="tab-content">
+                <!-- Header Card with Stats & Controls -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-brain"></i> AI Memory Manager</h3>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-secondary btn-small" onclick="memoryAddNote()">
+                                <i class="fas fa-sticky-note"></i> Ghi chú
+                            </button>
+                            <button class="btn btn-primary" onclick="memoryOpenCreateModal()">
+                                <i class="fas fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Stats -->
+                        <div id="memoryStatsContainer" style="margin-bottom:15px;"></div>
+
+                        <!-- Controls -->
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-secondary btn-small" onclick="memoryRefresh()" style="flex:1;">
+                                <i class="fas fa-sync"></i> Làm mới
+                            </button>
+                            <button class="btn btn-warning btn-small" onclick="memoryClearNotes()">
+                                <i class="fas fa-eraser"></i> Xóa ghi chú
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="memoryClearAll()">
+                                <i class="fas fa-trash"></i> Xóa tất cả
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory Content -->
+                <div class="content-header" style="margin-top:20px; margin-bottom:10px;">
+                    <h2><i class="fas fa-database"></i> Thông tin đã lưu</h2>
+                </div>
+
+                <div id="memoryContainer">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Đang tải...
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="content-header" style="margin-top:20px; margin-bottom:10px;">
+                    <h2><i class="fas fa-sticky-note"></i> Ghi chú Context</h2>
+                </div>
+
+                <div id="memoryNotesContainer">
+                    <div style="color:var(--gray-500); font-size:12px; text-align:center; padding:20px;">
+                        Đang tải...
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><i class="fas fa-code"></i> R1 Manager v1.0</p>
+        </footer>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 id="modalTitle">Xác nhận</h3>
+            <p id="modalMessage">Bạn có chắc chắn muốn thực hiện?</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button id="confirmBtn" class="btn btn-danger">
+                    <i class="fas fa-check"></i> Xác nhận
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WiFi Connect Modal -->
+    <div id="wifiModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon" style="background: rgba(99, 102, 241, 0.15);">
+                <i class="fas fa-wifi" style="color: var(--primary);"></i>
+            </div>
+            <h3 id="wifiModalTitle">Kết nối WiFi</h3>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="wifiPassword" class="input" placeholder="Nhập mật khẩu WiFi">
+            </div>
+
+            <!-- Static IP Options -->
+            <div style="margin-top: 10px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" id="wifiStaticToggle" onchange="toggleWifiStaticOptions()">
+                    Sử dụng IP Tĩnh (Advanced)
+                </label>
+            </div>
+            <div id="wifiStaticOptions"
+                style="display: none; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px;">
+                <div class="form-group">
+                    <label>IP Address</label>
+                    <input type="text" id="wifiIp" class="input" placeholder="192.168.1.100">
+                </div>
+                <div class="form-group">
+                    <label>Gateway</label>
+                    <input type="text" id="wifiGateway" class="input" placeholder="192.168.1.1">
+                </div>
+                <div class="form-group">
+                    <label>DNS 1</label>
+                    <input type="text" id="wifiDns1" class="input" placeholder="8.8.8.8" value="8.8.8.8">
+                </div>
+                <div class="form-group">
+                    <label>DNS 2</label>
+                    <input type="text" id="wifiDns2" class="input" placeholder="8.8.4.4" value="8.8.4.4">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeWifiModal()">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+                <button class="btn btn-primary" onclick="confirmConnectWifi()">
+                    <i class="fas fa-link"></i> Kết nối
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Xiaozhi Settings Modal -->
+    <div id="xiaozhiSettingsModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-icon" style="background: rgba(16, 185, 129, 0.15);">
+                <i class="fas fa-robot" style="color: #10B981;"></i>
+            </div>
+            <h3 id="xzModalTitle">Xiaozhi Settings</h3>
+
+            <div class="scrollable-content" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                <input type="hidden" id="xz-bot-id">
+                <div class="form-group">
+                    <label>Bot Name</label>
+                    <input type="text" id="xz-bot-name" class="input" placeholder="My Bot">
+                </div>
+                <div class="form-group">
+                    <label>WebSocket URL</label>
+                    <input type="text" id="xz-ws-url" class="input" placeholder="wss://...">
+                </div>
+                <div class="form-group">
+                    <label>QTA URL (Activation)</label>
+                    <input type="text" id="xz-qta-url" class="input" placeholder="https://...">
+                </div>
+                <div id="xz-custom-mac-group" class="form-group" style="display:none;">
+                    <label>Custom MAC Address</label>
+                    <div class="form-row">
+                        <input type="text" id="xz-custom-mac" class="input flex-grow" placeholder="AA:BB:CC:DD:EE:FF">
+                        <button class="btn btn-secondary" onclick="generateRandomMac()">
+                            <i class="fas fa-random"></i> Gen
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>UUID Tracking</label>
+                    <div class="form-row">
+                        <div id="xz-uuid" style="font-family:monospace; color:var(--gray-400); font-size:11px;"
+                            class="flex-grow">
+                            Automatically generated</div>
+                        <button class="btn btn-secondary btn-small" onclick="regenerateBotUuid()">
+                            <i class="fas fa-sync"></i> Regen
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                    <label>Activation / OTP</label>
+                    <div id="xz-otp-status" style="margin-bottom: 10px; font-weight: bold; text-align: center;">Ready
+                    </div>
+                    <button class="btn btn-warning btn-block" onclick="checkXiaozhiOtp()">
+                        <i class="fas fa-key"></i> Check Activation / Get Code
+                    </button>
+                </div>
+
+                <!-- MCP Configuration -->
+                <div class="form-group"
+                    style="border-top: 1px solid var(--gray-700); padding-top: 15px; margin-top: 15px;">
+                    <label style="color: var(--primary); font-weight: 600;">
+                        <i class="fas fa-plug"></i> MCP Integration (Optional)
+                    </label>
+                    <p style="font-size: 11px; color: var(--gray-400); margin-bottom: 10px;">
+                        Enable AI tool calling for this bot via Model Context Protocol
+                    </p>
+                    <div class="form-group">
+                        <label>MCP Endpoint URL</label>
+                        <input type="text" id="xz-mcp-url" class="input" placeholder="wss://api.xiaozhi.me/mcp/">
+                    </div>
+                    <div class="form-group">
+                        <label>MCP Token (JWT)</label>
+                        <input type="password" id="xz-mcp-token" class="input"
+                            placeholder="eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeXiaozhiSettings()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveBotConfig()">Save Config</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Edit Modal -->
+    <div id="memoryModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-icon" style="background: rgba(16, 185, 129, 0.15);">
+                <i class="fas fa-brain" style="color: #b91078;"></i>
+            </div>
+            <h3 id="memoryModalTitle">Thêm Thông Tin</h3>
+            <form id="memoryForm" onsubmit="memoryHandleSubmit(event)">
+                <div class="form-group">
+                    <label for="memoryKey">Key *</label>
+                    <input type="text" id="memoryKey" class="input" required
+                        placeholder="VD: user_name, user_hobbies, pet_name...">
+                    <div style="font-size:11px; color:var(--gray-500); margin-top:5px;">
+                        Keys có sẵn: user_name, user_age, user_birthday, user_job, user_location, user_hobbies, user_family, user_music_taste
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="memoryValue">Value *</label>
+                    <textarea id="memoryValue" class="input" rows="3" required
+                        placeholder="Giá trị cần lưu..."></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="memoryCloseModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/apps.js"></script>
+    <script src="js/system.js"></script>
+    <script src="js/network.js"></script>
+    <script src="js/files.js"></script>
+    <script src="js/hardware.js"></script>
+    <script src="js/xiaozhi.js"></script>
+    <script src="js/zing.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/logs.js"></script>
+    <script src="js/memory.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('sw.js').then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function (err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

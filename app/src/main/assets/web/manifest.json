@@ -1,0 +1,30 @@
+{
+    "name": "R1 Manager",
+    "short_name": "R1 Manager",
+    "start_url": ".",
+    "scope": ".",
+    "display": "standalone",
+    "background_color": "#1a1b26",
+    "theme_color": "#1a1b26",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "img/icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "img/icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "img/icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

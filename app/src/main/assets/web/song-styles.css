@@ -1,0 +1,79 @@
+/* ===== Song Item (Zing MP3) ===== */
+.song-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: var(--gray-700);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.song-item:hover {
+    background: var(--gray-600);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.song-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-right: 12px;
+    background: var(--gray-800);
+}
+
+.song-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.song-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-100);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-artist {
+    font-size: 12px;
+    color: var(--gray-400);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-action {
+    margin-left: 12px;
+}
+
+.song-play-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.song-play-btn:hover {
+    background: var(--primary-light);
+    transform: scale(1.1);
+}
+
+.song-play-btn i {
+    font-size: 12px;
+    margin-left: 2px; /* Visual center adjustment */
+}
